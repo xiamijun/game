@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 600px;height: 600px;border: 1px solid #000;margin:10px auto; background: url(img/bak.jpg)">
+    <canvas id="can" width="600px" height="600px" onclick="play(event)"></canvas>
+</div>
+<script>
+    //画布宽高
+    const TOTAL_WIDTH=parseInt(document.getElementById('can').width);
+    const TOTAL_HEIGHT=parseInt(document.getElementById('can').height);
+    //设置总行数和总列数
+    const NUMBER=15;
+    //每一格的宽度和高度
+    const EVERY_WIDTH=TOTAL_WIDTH/NUMBER;
+    //上边距
+    const MARGIN_TOP= parseInt(document.getElementsByTagName('div')[0].style.marginTop);
+
+    //设置该局棋盘是否赢了，如果赢了就不能再走了
+    let isEnd=false;
+
+    //存储状态,初始化0为没有走过的，1为白棋走的，2为黑棋走的
+    let maps=new Array(NUMBER);
+    for (let i=0;i<NUMBER;i++){
+        maps[i]=new Array(NUMBER);
+        for (let j=0;j<NUMBER;j++){
+            maps[i][j]=0;
+        }
+    }
+
+    let canvas=document.getElementById('can');
+    let ctx=canvas.getContext('2d');
+    //画棋盘
+    ctx.strokeStyle='#000';
+    for (let i=0;i<NUMBER;i++){
+        for (let j=0;j<NUMBER;j++){
+            ctx.strokeRect(i*EVERY_WIDTH,j*EVERY_WIDTH,EVERY_WIDTH,EVERY_WIDTH);
+        }
+    }
+
+    //黑子和白子
+    let black=new Image();
+    let white=new Image();
+    black.src='img/black.png';
+    white.src='img/white.png';
+
+    let isBlack=true;
+
+    function play(e) {
+        //点击坐标
+        let leftOffset=(screen.width-TOTAL_WIDTH)/2;
+        let x=e.clientX-leftOffset;
+        let y=e.clientY-MARGIN_TOP;
+
+        //行列
+        let row=Math.floor(y/EVERY_WIDTH)+(y%EVERY_WIDTH<EVERY_WIDTH/2?0:1);
+        let col=Math.floor(x/EVERY_WIDTH)+(x%EVERY_WIDTH<EVERY_WIDTH/2?0:1);
+//        alert(row+','+col);
+
+        //已下的位置不能下
+        if (maps[row][col]){
+            alert('不能在这个位置下棋');
+            return;
+        }
+
+        //棋盘边缘不能下
+        if (row!=0&&col!=0&&row!=NUMBER&&col!=NUMBER){
+            if (isEnd){
+                alert('游戏已结束，请刷新网页');
+            }
+            if(isBlack){
+                ctx.drawImage(black,col*EVERY_WIDTH-EVERY_WIDTH/2,row*EVERY_WIDTH-EVERY_WIDTH/2);
+                maps[row][col]=2;   //设为黑子
+                isWin(2,row,col);
+            }else {
+                ctx.drawImage(white,col*EVERY_WIDTH-EVERY_WIDTH/2,row*EVERY_WIDTH-EVERY_WIDTH/2);
+                maps[row][col]=1;   //设为白子
+                isWin(1,row,col);
+            }
+            //改变棋子颜色
+            isBlack=!isBlack;
+        }
+    }
+
+    /**
+     * 判断是否赢
+     * @param chess 1：白；2：黑
+     * @param row
+     * @param col
+     */
+    function isWin(chess,row,col) {
+        let orginalRow=row,
+            orginalCol=col;
+        let total=1;
+        while (maps[row][col-1]==chess){
+            total++;
+            col--;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        col=orginalCol;
+        total=1;
+        while (maps[row][col+1]==chess){
+            total++;
+            col++;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        col=orginalCol;
+        total=1;
+        while (maps[row-1][col]==chess){
+            total++;
+            row--;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        row=orginalRow;
+        total=1;
+        while (maps[row+1][col]==chess){
+            total++;
+            row++;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        row=orginalRow;
+        total=1;
+        while (maps[row+1][col+1]==chess){
+            total++;
+            row++;
+            col++;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        row=orginalRow;
+        col=orginalCol;
+        total=1;
+        while (maps[row-1][col-1]==chess){
+            total++;
+            row--;
+            col--;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        row=orginalRow;
+        col=orginalCol;
+        total=1;
+        while (maps[row+1][col-1]==chess){
+            total++;
+            row++;
+            col--;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+        row=orginalRow;
+        col=orginalCol;
+        total=1;
+        while (maps[row-1][col+1]==chess){
+            total++;
+            row--;
+            col++;
+            if (total>=5){
+                alert(chess==1?'白子赢了':'黑子赢了');
+                isEnd=true;
+            }
+        }
+    }
+
+</script>
+</body>
+</html>
